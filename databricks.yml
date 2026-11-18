@@ -1,0 +1,31 @@
+bundle:
+  name: supply_chain
+
+sync:
+  include:
+    - config/**
+    - src/**
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-2dcd959e-1a64.cloud.databricks.com
+
+resources:
+  jobs:
+    bronze_ingest:
+      name: supply_chain_bronze_ingest
+      tasks:
+        - task_key: load_bronze
+          spark_python_task:
+            python_file: src/supply_chain/run_bronze.py
+            parameters:
+              - ${workspace.file_path}/config/bronze_sources.yml
+          environment_key: default
+      environments:
+        - environment_key: default
+          spec:
+            client: "2"
+            dependencies: ["pyyaml"]

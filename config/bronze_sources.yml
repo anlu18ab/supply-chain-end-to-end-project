@@ -1,0 +1,15 @@
+catalog: supply_chain_dev
+tables:
+  - {source: m5,         entity: calendar,               format: csv}
+  - {source: m5,         entity: sales_train_evaluation, format: csv}
+  - {source: m5,         entity: sell_prices,            format: csv}
+  - {source: olist,      entity: orders,                 format: csv}
+  - {source: olist,      entity: order_items,            format: csv}
+  - {source: olist,      entity: order_payments,         format: csv}
+  - {source: olist,      entity: order_reviews,          format: csv}
+  - {source: olist,      entity: customers,              format: csv}
+  - {source: olist,      entity: sellers,                format: csv}
+  - {source: olist,      entity: products,               format: csv}
+  - {source: olist,      entity: geolocation,            format: csv}
+  - {source: olist,      entity: product_category_name_translation, format: csv}
+  - {source: open_meteo, entity: daily,                  format: json}

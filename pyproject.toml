@@ -1,0 +1,32 @@
+[project]
+name = "supply-chain"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Andres Luo", email = "anlu" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "databricks-connect>=19.3.0",
+    "databricks-sdk>=0.167.0",
+    "dbt-databricks>=1.7.3",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+supply-chain = "supply_chain:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.7.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+    "sqlfluff>=4.5.0",
+    "sqlfluff-templater-dbt>=4.5.0",
+]

@@ -1,0 +1,5 @@
+data/
+.env
+venv/
+dbt/target/
+profiles.yml
