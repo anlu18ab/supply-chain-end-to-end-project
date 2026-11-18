@@ -1,0 +1,12 @@
+version: 2
+seeds:
+  - name: brazil_holidays
+    description: "Brazilian national holidays and retail events, 2016-2018. Maintained manually."
+    config:
+      column_types:
+        holiday_date: date
+    columns:
+      - name: holiday_date
+        data_tests: [not_null]
+      - name: holiday_name
+        data_tests: [not_null]

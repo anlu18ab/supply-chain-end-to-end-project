@@ -1,0 +1,26 @@
+version: 2
+sources:
+  - name: bronze
+    schema: bronze
+    description: "Raw, as-received data. Loaded by Auto Loader, not by dbt."
+    tables:
+      - name: olist_orders
+        columns:
+          - name: order_id
+            tests: [not_null]   # presence only; uniqueness is checked in silver
+          - name: _ingested_at
+            tests: [not_null]
+          - name: _source_file
+            tests: [not_null]
+      - name: olist_order_items
+      - name: olist_order_payments
+      - name: olist_order_reviews
+      - name: olist_customers
+      - name: olist_sellers
+      - name: olist_products
+      - name: olist_geolocation
+      - name: olist_product_category_name_translation
+      - name: m5_calendar
+      - name: m5_sales_train_evaluation
+      - name: m5_sell_prices
+      - name: open_meteo_daily
