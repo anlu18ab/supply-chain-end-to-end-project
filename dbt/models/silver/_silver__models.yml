@@ -1,0 +1,161 @@
+version: 2
+
+models:
+  # ---------- M5 ----------
+  - name: m5_calendar
+    description: "One row per calendar day (d_1 ... d_1969)."
+    columns:
+      - name: d
+        data_tests: [unique, not_null]
+      - name: calendar_date
+        data_tests: [unique, not_null]
+      - name: wm_yr_wk
+        data_tests: [not_null]
+
+  - name: m5_sell_prices
+    description: "Weekly sell price per store and item."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [store_id, item_id, wm_yr_wk]
+    columns:
+      - name: sell_price
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range: {min_value: 0, inclusive: false}
+
+  - name: m5_sales_daily
+    description: >
+      Daily unit sales per item and store, joined to calendar and price.
+      A NULL sell_price (is_price_listed = false) means the item was not yet
+      on sale in that store that week, so units_sold = 0 is not true zero demand.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [series_id, sales_date]
+    columns:
+      - name: series_id
+        data_tests: [not_null]
+      - name: sales_date
+        data_tests: [not_null]
+      - name: units_sold
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range: {min_value: 0}
+      - name: state_id
+        data_tests:
+          - accepted_values: {values: ['CA', 'TX', 'WI']}
+
+  # ---------- Olist ----------
+  - name: olist_orders
+    description: "One row per order, typed. Contract enforced."
+    config:
+      contract: {enforced: true}
+    columns:
+      - name: order_id
+        data_type: string
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_type: string
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('olist_customers')
+              field: customer_id
+              config: {severity: warn}
+      - name: order_status
+        data_type: string
+        data_tests:
+          - accepted_values:
+              values: [created, approved, invoiced, processing, shipped,
+                       delivered, unavailable, canceled]
+      - name: purchased_at
+        data_type: timestamp
+        data_tests: [not_null]
+      - name: approved_at
+        data_type: timestamp
+      - name: carrier_picked_up_at
+        data_type: timestamp
+      - name: delivered_to_customer_at
+        data_type: timestamp
+      - name: estimated_delivery_at
+        data_type: timestamp
+        data_tests: [not_null]
+      - name: _ingested_at
+        data_type: timestamp
+
+  - name: olist_order_items
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [order_id, order_item_number]
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships: {to: ref('olist_orders'), field: order_id}
+      - name: price
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range: {min_value: 0}
+
+  - name: olist_order_payments
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [order_id, payment_sequence]
+
+  - name: olist_order_reviews
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [review_id, order_id]
+    columns:
+      - name: review_score
+        data_tests:
+          - accepted_values: {values: [1, 2, 3, 4, 5], quote: false}
+
+  - name: olist_customers
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+
+  - name: olist_sellers
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+
+  - name: olist_products
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+
+  - name: olist_geolocation
+    columns:
+      - name: zip_code_prefix
+        data_tests: [unique, not_null]
+
+  - name: olist_delivery_outcomes
+    description: >
+      Delivery outcome per order and the binary label is_delivery_failure.
+      NULL label = outcome not yet known; exclude when training.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: delivery_outcome
+        data_tests:
+          - accepted_values:
+              values: [on_time, late, canceled, unavailable, in_progress, unknown]
+      - name: is_delivery_failure
+        data_tests:
+          - accepted_values: {values: [0, 1], quote: false}
+
+  # ---------- Weather ----------
+  - name: weather_daily
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [state_id, weather_date]
+    columns:
+      - name: weather_date
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('m5_calendar')
+              field: calendar_date
+      - name: temp_max_c
+        data_tests: [not_null]

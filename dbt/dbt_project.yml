@@ -16,6 +16,25 @@ clean-targets: ["target", "dbt_packages"]
 models:
   supply_chain:
     +materialized: view
+    silver:
+      +schema: silver
+      +materialized: table
+      +file_format: delta
+    gold:
+      +schema: gold
+      +materialized: table
+      +file_format: delta
+      dims:     {+tags: ['star']}
+      facts:    {+tags: ['star']}
+      features: {+tags: ['ml']}
+
+vars:
+  m5_max_day: 1941
+  forecast_horizon: 28
+  m5_valid_start_day: 1886
+  m5_test_start_day: 1914
+  olist_valid_start: '2018-04-01'
+  olist_test_start: '2018-06-01'
 
 seeds:
   supply_chain:

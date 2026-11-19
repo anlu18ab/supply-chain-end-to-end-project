@@ -1,5 +1,33 @@
 data/
-.env
-venv/
 dbt/target/
 profiles.yml
+.vscode
+
+# Secrets
+.env
+*.pem
+
+# Dependencies
+node_modules/
+venv/
+
+# Build & Cache
+dist/
+build/
+*.log
+.cache/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+settings.json
+.idea/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info

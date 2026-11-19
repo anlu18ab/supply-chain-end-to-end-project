@@ -9,4 +9,8 @@ seeds:
       - name: holiday_date
         data_tests: [not_null]
       - name: holiday_name
-        data_tests: [not_null]
+        data_tests: [not_null, unique]
+      - name: holiday_type
+        data_tests:
+          - accepted_values: 
+              arguments: [national, national_optional, commercial]
